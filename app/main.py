@@ -1,4 +1,5 @@
-from fastapi import Body, FastAPI, Response, status, HTTPException
+import time
+from fastapi import Body, FastAPI, Response, status, HTTPException, Depends
 from typing import Union 
 from pydantic import BaseModel
 from typing import Optional
@@ -6,19 +7,14 @@ from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
-from . import models 
-from .database import SessionLocal, engine
+import models 
+from database import get_db, engine
+from sqlalchemy.orm import Session
 
 app = FastAPI() 
 
 models.Base.metadata.create_all(bind=engine) 
 
-def get_db(): 
-    db = SessionLocal() 
-    try: 
-        yield db 
-    finally: 
-        db.close()
         
 class Post(BaseModel): 
     title: str 
@@ -31,13 +27,23 @@ def root():
     return {'message': 'welcome to the Posts API'} 
 
 # connect to postgresql 
-try: 
-    conn = psycopg2.connect("dbname=fastapi_db user=postgres password=12345")
-    cursor = conn.cursor()
-    print('connected succesfully')
-except Exception as error: 
-    print('connection failed') 
-    print(f'error: {error}')
+while True: 
+    try: 
+        conn = psycopg2.connect("dbname=fastapi_db user=postgres password=12345")
+        cursor = conn.cursor()
+        print('connected succesfully')
+        break
+    except Exception as error: 
+        print('connection failed') 
+        print(f'error: {error}')
+        time.sleep(2)
+
+# orm test method
+@app.get('/sqlalchemy/') 
+def test_posts(db: Session = Depends(get_db)): 
+    posts = db.query(models.Post).all()
+    return {'status': f'success {posts}'}
+    
     
 # get all of your posts 
 @app.get('/post')
