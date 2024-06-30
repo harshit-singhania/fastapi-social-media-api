@@ -44,45 +44,33 @@ def create_posts(post):
 def get_post(id: int): 
     cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
     post = cursor.fetchone() 
+    conn.commit()
     if not post: 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail=f'post does not exist') 
     return {'data': post}
     
-#     post = find_post(id)
-#     if post is None: 
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'404 error. post not found')
-#     return {'data': post}
     
 # # deleting a specific post
-# @app.delete('/posts/{id}') 
-# def delete_post(id: int): 
+@app.delete('/posts/{id}') 
+def delete_post(id: int): 
+    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""", (str(id)))
+    deleted = cursor.fetchone() 
+    conn.commit()
+    if deleted == None: 
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
+                            detail=f'post does not exist')  
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
     
-#     def delete(post_id): 
-#         for post in my_posts: 
-#             if post['id'] == post_id: 
-#                 my_posts.remove(post)
-#                 return post
-#         return None 
-    
-#     post = delete(id)
-#     if post is None: 
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'404 error. post not found')
-#     return {'message': f'post {post["title"]} has been deleted'}
 
 # # updating a specific post 
-# @app.put('/posts/{id}')
-# def update_post(id: int, post: Post): 
+@app.put('/posts/{id}')
+def update_post(id: int, post): 
     
-#     def update(post_id, post): 
-#         for i, p in enumerate(my_posts): 
-#             if p['id'] == post_id: 
-#                 my_posts[i] = post.dict()
-#                 my_posts[i]['id'] = post_id
-#                 return my_posts[i]
-#         return None 
-    
-#     post = update(id, post)
-#     if post is None: 
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'404 error. post not found')
-#     return {'data': my_posts}
+    cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s RETURNING *""", 
+                   (post.title, post.content, post.published))
+    updated_post= cursor.fetchone() 
+    if update_post == None: 
+        raise  HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
+                            detail=f'post does not exist')  
+    return {'data': update_post}

@@ -57,3 +57,11 @@ PostgresSQL is a relational databse that can be used with FastAPI and implements
 #### PRIMARY KEY 
 1. used to uniquely identify each row in the table 
 2. each table can only have one column as the primary key 
+
+## ORM FOR DATABASES 
+
+1. ORM stands for object relational mapper 
+2. perform database operations using code that maps to SQL 
+3. no need to use raw SQL 
+4. SQL can be abstracted away now 
+5. SQLAlchemy is being used 
