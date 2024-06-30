@@ -65,3 +65,13 @@ PostgresSQL is a relational databse that can be used with FastAPI and implements
 3. no need to use raw SQL 
 4. SQL can be abstracted away now 
 5. SQLAlchemy is being used 
+
+## SCHEMA MODELS 
+
+1. Schema/pydantic models define the structure of a request and response 
+2. Ensures that the user adheres to an expected format 
+
+## SQLALCHEMY MODELS 
+
+1. responsible for defining the columns of a table .
+2. used to perform crud operations on entries within the database. 

@@ -1,25 +1,19 @@
 import time
 from fastapi import Body, FastAPI, Response, status, HTTPException, Depends
-from typing import Union 
 from pydantic import BaseModel
-from typing import Optional
-from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from datetime import datetime
 import models 
 from database import get_db, engine
 from sqlalchemy.orm import Session
+import schemas 
+from typing import List
 
 app = FastAPI() 
 
 models.Base.metadata.create_all(bind=engine) 
 
-        
-class Posts(BaseModel): 
-    title: str 
-    content: str 
-    published: bool = True
+    
 
 # index route
 @app.get('/') 
@@ -39,14 +33,14 @@ while True:
         time.sleep(2)
 
 # orm test method
-@app.get('/sqlalchemy/') 
-def test_posts(db: Session = Depends(get_db)): 
-    posts = db.query(models.Post).all()
-    return {'status': f'success {posts}'}
+# @app.get('/sqlalchemy/') 
+# def test_posts(db: Session = Depends(get_db)): 
+#     posts = db.query(models.Post).all()
+#     return {'status': f'success {posts}'}
     
     
 # get all of your posts 
-@app.get('/post')
+@app.get('/post', response_model=List[schemas.PostResponse])
 def get_posts(db: Session = Depends(get_db)): 
     
     # RAW SQL 
@@ -55,11 +49,11 @@ def get_posts(db: Session = Depends(get_db)):
     
     # ORM
     posts = db.query(models.Post).all()
-    return {'data': posts}
+    return posts
 
 # creating posts 
-@app.post('/create_post', status_code=status.HTTP_201_CREATED)
-def create_posts(post: Posts, db: Session = Depends(get_db)): 
+@app.post('/create_post', status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
+def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)): 
     
     # RAW SQL 
     # cursor.execute("""INSERT INTO posts (title, content) VALUE (%s, %s) RETURNING *""", ( post.title, post.content))
@@ -73,11 +67,11 @@ def create_posts(post: Posts, db: Session = Depends(get_db)):
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
-    return {'data': new_post}
+    return new_post
 
 
 # # retrieving a single post
-@app.get('/posts/{id}')
+@app.get('/posts/{id}', response_model=schemas.PostResponse)
 def get_post(id: int, db: Session = Depends(get_db)): 
     
     # RAW SQL
@@ -94,7 +88,7 @@ def get_post(id: int, db: Session = Depends(get_db)):
     if not post: 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail='post not in db')
-    return {'post': post}
+    return post
 
 
 # # deleting a specific post
@@ -120,8 +114,8 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     
 
 # # updating a specific post 
-@app.put('/posts/{id}')
-def update_post(id: int, post:Posts, db: Session = Depends(get_db)): 
+@app.put('/posts/{id}', response_model=schemas.PostResponse)
+def update_post(id: int, post:schemas.PostCreate, db: Session = Depends(get_db)): 
     
     # RAW SQL
     # cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s RETURNING *""", 
@@ -141,4 +135,4 @@ def update_post(id: int, post:Posts, db: Session = Depends(get_db)):
     else: 
         post_query.update(post.dict(), synchronize_session=False) 
         db.commit() 
-        return {'post': post_query.first()}
+        return post_query.first()
