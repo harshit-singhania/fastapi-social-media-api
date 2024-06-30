@@ -6,8 +6,24 @@ from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
+from . import models 
+from .database import SessionLocal, engine
 
 app = FastAPI() 
+
+models.Base.metadata.create_all(bind=engine) 
+
+def get_db(): 
+    db = SessionLocal() 
+    try: 
+        yield db 
+    finally: 
+        db.close()
+        
+class Post(BaseModel): 
+    title: str 
+    content: str 
+    published: bool = True
 
 # index route
 @app.get('/') 
