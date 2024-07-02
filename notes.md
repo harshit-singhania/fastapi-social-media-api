@@ -100,3 +100,8 @@ PostgresSQL is a relational databse that can be used with FastAPI and implements
     * the api creates a test signature by combining the header and payload recieved from the user along with the api secret which resides in the api server. 
     * the api compares the test signature and then compares it to the signature recieved from the user 
     * if they match then the token is valid. 
+
+## SQL RELATIONSHIPS 
+
+1. in a traditional application we need to tie the post and the user who created the post which allows to assosciate the user and his post together. 
+2. for this we specify a foreign key (user_id) into the posts table. 

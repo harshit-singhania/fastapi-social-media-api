@@ -16,10 +16,9 @@ class PostCreate(PostBase):
 # we send data back to the user 
 
 class PostResponse(PostBase): 
-    title: str  
+    id: int
     created_at : datetime
-    class Config: 
-        orm_mode = True 
+    owner_id: int 
         
 def UserCreate(BaseModel): 
     email: EmailStr
