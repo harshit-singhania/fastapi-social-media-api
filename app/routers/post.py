@@ -7,6 +7,7 @@ from database import get_db
 from utils import hashing 
 from typing import Optional, List
 from sqlalchemy.orm import Session 
+import oauth2
 
 router = APIRouter(
     prefix='/posts', 
@@ -27,7 +28,7 @@ def get_posts(db: Session = Depends(get_db)):
 
 # creating posts 
 @router.post('/create_post', status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
-def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)): 
+def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db), get_current_user: int = Depends(oauth2.get_current_user)): 
     
     # RAW SQL 
     # cursor.execute("""INSERT INTO posts (title, content) VALUE (%s, %s) RETURNING *""", ( post.title, post.content))
