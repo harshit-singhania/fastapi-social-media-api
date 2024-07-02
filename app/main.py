@@ -1,17 +1,11 @@
 import time
-from fastapi import Body, FastAPI, Response, status, HTTPException, Depends
-from sqlalchemy.exc import IntegrityError
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-import psycopg2
-from psycopg2.extras import RealDictCursor
+from fastapi import FastAPI
+# import psycopg2
 import models 
-from database import get_db, engine
-from sqlalchemy.orm import Session
-import schemas 
-from typing import List
-from utils import hashing
-from routers import post, user 
+from database import engine
+from routers import post, user
+from pydantic import BaseSettings 
+from config import Settings 
 app = FastAPI() 
 
 models.Base.metadata.create_all(bind=engine) 
@@ -23,17 +17,16 @@ app.include_router(user.router)
 def root(): 
     return {'message': 'welcome to the Posts API'} 
 
-# connect to postgresql 
-while True: 
-    try: 
-        conn = psycopg2.connect("dbname=fastapi_db user=postgres password=12345")
-        cursor = conn.cursor()
-        print('connected succesfully')
-        break
-    except Exception as error: 
-        print('connection failed') 
-        print(f'error: {error}')
-        time.sleep(2)
+# while True: 
+#     try: 
+#         conn = psycopg2.connect("dbname=fastapi_db user=postgres password=12345")
+#         cursor = conn.cursor()
+#         print('connected succesfully')
+#         break
+#     except Exception as error: 
+#         print('connection failed') 
+#         print(f'error: {error}')
+#         time.sleep(2)
 
 # orm test method
 # @app.get('/sqlalchemy/') 

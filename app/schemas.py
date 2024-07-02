@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, conint
 from datetime import datetime
 # user sends data to us 
 
@@ -13,25 +13,31 @@ class PostBase(BaseModel):
 class PostCreate(PostBase): 
     pass 
 
-# we send data back to the user 
-
-class PostResponse(PostBase): 
-    id: int
-    created_at : datetime
-    owner_id: int 
-        
-def UserCreate(BaseModel): 
-    email: EmailStr
-    password: str 
-    class Config: 
-        orm_mode = True 
-        
 class UserOut(BaseModel): 
     id: int 
     email: EmailStr 
     created_at: datetime
     class Config: 
         orm_mode = True
+
+# we send data back to the user 
+
+class PostResponse(PostBase): 
+    id: int
+    created_at : datetime
+    owner_id: int 
+    owner: UserOut
+    
+    class Config: 
+        orm_mode = True
+        
+class UserCreate(BaseModel): 
+    email: EmailStr
+    password: str 
+    class Config: 
+        orm_mode = True 
+        
+
         
 class UserLogin(BaseModel): 
     email: EmailStr
@@ -43,3 +49,9 @@ class Token(BaseModel):
 
 class TokenData(BaseModel): 
     id: Optional[str] = None 
+    
+from pydantic import PositiveInt
+
+class Vote(BaseModel): 
+    post_id: int 
+    dir: PositiveInt
