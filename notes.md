@@ -75,3 +75,28 @@ PostgresSQL is a relational databse that can be used with FastAPI and implements
 
 1. responsible for defining the columns of a table .
 2. used to perform crud operations on entries within the database. 
+
+## JWT TOKEN AUTHENTICATION 
+
+1. client supplies the username and password to the API 
+2. if the client's login information is valid, then the API responds with a JWT token and supplies it to the client.
+3. this JWT token can be used by the client when the client needs to be authenticated in order to access resources that requires them to be logged in. 
+4. the client supplies the token in the header of their request. 
+5. the api checks whether the token is valid, and if it is then it supplies the client with the resources it requires. 
+
+### COMPONENTS OF A JWT TOKEN
+
+1. the token is made of three individual pieces- 
+    * the header of the JWT token, which contains metadata about the token 
+    * the payload, which is optional, and there should be no confidential information put into the token. 
+    * the token secret 
+2. the three elements are combined and then a signing algorithm is used to ensure that no one is able to tamper with the token. the signature is essentially there for data integrity 
+
+### PURPOSE OF THE SIGNATURE 
+
+1. the header, payload and api secret are passed through a signing algorithm in order to create a token 
+2. a malicious user will not be able to tamper with the signed api because the user does not have access to the api secret which was used to generate the signature in the first place 
+3. the api verifies the validity of the token by 
+    * the api creates a test signature by combining the header and payload recieved from the user along with the api secret which resides in the api server. 
+    * the api compares the test signature and then compares it to the signature recieved from the user 
+    * if they match then the token is valid. 
