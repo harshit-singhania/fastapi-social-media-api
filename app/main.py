@@ -3,16 +3,21 @@ from fastapi import FastAPI
 # import psycopg2
 import models 
 from database import engine
-from routers import post, user
+from routers import post, user, auth
 from pydantic import BaseSettings 
 from config import Settings 
+from routers import vote 
+
 app = FastAPI() 
 
 models.Base.metadata.create_all(bind=engine) 
 
 app.include_router(post.router) 
 app.include_router(user.router)
-# index route
+app.include_router(auth.router)
+app.include_router(vote.router)
+
+# index route 
 @app.get('/') 
 def root(): 
     return {'message': 'welcome to the Posts API'} 
