@@ -38,7 +38,7 @@ class UserCreate(BaseModel):
         orm_mode = True 
         
 class PostOut(PostBase): 
-    Post: PostResponse
+    post: PostResponse
     votes: int 
         
 class UserLogin(BaseModel): 

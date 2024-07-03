@@ -105,3 +105,14 @@ PostgresSQL is a relational databse that can be used with FastAPI and implements
 
 1. in a traditional application we need to tie the post and the user who created the post which allows to assosciate the user and his post together. 
 2. for this we specify a foreign key (user_id) into the posts table. 
+
+## DATABASE MIGRATION TOOL 
+
+1. a limitation of sqlalchemy is that it will only create a table if it sees that a table with the same name does not already exist  
+2. if we make changes to the columns of a table or add a foreign key to it or anything, sqlalchemy will not do anything to the table because it already exists. 
+3. to overcome this limitation we use different database migration tools. 
+4. we use alembic for this purpose. 
+
+### ALEMBIC 
+
+1. allows us to incrementally track changes to the database schema and rollback changes to any point in time
